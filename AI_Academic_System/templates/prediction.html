@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Student Analysis | Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.35);
+            --glass-border: rgba(255, 255, 255, 0.45);
+            --accent-purple: #9d8df1;
+            --text-main: #4a4a68;
+        }
+
+        body {
+            margin: 0;
+            /* Dashboard matching gradient */
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            background-attachment: fixed;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* BACK BUTTON */
+        .back-nav {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 10px 20px;
+            border-radius: 15px;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            transition: 0.3s;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+        .back-nav:hover {
+            background: white;
+            transform: translateX(-5px);
+            color: var(--accent-purple);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        /* GLASS CARD */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 35px;
+            padding: 40px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h3 {
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        /* INTERACTIVE INPUTS */
+        .form-group {
+            text-align: left;
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            margin-left: 5px;
+            color: var(--text-main);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid transparent;
+            border-radius: 18px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            background: white;
+            border-color: var(--accent-purple);
+            box-shadow: 0 5px 15px rgba(157, 141, 241, 0.2);
+        }
+
+        /* BUTTON STYLE MATCHING DASHBOARD */
+        button {
+            width: 100%;
+            padding: 16px;
+            background: white;
+            color: var(--accent-purple);
+            border: none;
+            border-radius: 18px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background: var(--accent-purple);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(157, 141, 241, 0.3);
+        }
+
+        /* SPARKLE ICON */
+        .icon-header {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--accent-purple);
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="{{ url_for('dashboard') }}" class="back-nav">
+        <i class="fas fa-arrow-left me-2"></i> Dashboard
+    </a>
+
+    <div class="container">
+        <div class="card">
+            <div class="icon-header">
+                <i class="fas fa-wand-magic-sparkles"></i>
+            </div>
+
+            <h3>AI Analysis</h3>
+            <p>Input your data for a performance prediction</p>
+
+            <form action="/predict" method="POST">
+                <div class="form-group">
+                    <label>Attendance Rate (%)</label>
+                    <input type="number" name="Attendance_Rate" placeholder="e.g. 85" required min="0" max="100">
+                </div>
+
+                <div class="form-group">
+                    <label>Online Courses Completed</label>
+                    <input type="number" name="Online_Courses_Completed" placeholder="e.g. 3" required min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Weekly Study Hours</label>
+                    <input type="number" name="Study_Hours" placeholder="e.g. 20" required min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Average Sleep Hours</label>
+                    <input type="number" name="Sleep_Hours" placeholder="e.g. 7" required min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Class Participation</label>
+                    <select name="Participation">
+                        <option value="Yes">Active Participation</option>
+                        <option value="No">Silent Observer</option>
+                    </select>
+                </div>
+
+                <button type="submit">Run AI Prediction ✨</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

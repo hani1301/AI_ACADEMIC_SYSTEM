@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if register_mode %}Register{% else %}Login{% endif %} | AI Student OS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.45);
+            --accent-purple: #9d8df1;
+            --text-main: #4a4a68;
+        }
+
+        body {
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            background-attachment: fixed;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-wrapper {
+            width: 95%;
+            max-width: 1000px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 40px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.1);
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* LEFT PANEL */
+        .left-panel {
+            width: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            border-right: 1px solid var(--glass-border);
+        }
+
+        .left-panel img {
+            width: 75%;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* RIGHT PANEL */
+        .right-panel {
+            width: 50%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .brand {
+            font-size: 32px;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .brand span {
+            color: var(--accent-purple);
+        }
+
+        .subtitle {
+            color: var(--text-main);
+            font-weight: 500;
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #555;
+            margin-left: 5px;
+        }
+
+        .form-control {
+            border-radius: 18px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid transparent;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            background: white;
+            border-color: var(--accent-purple);
+            box-shadow: 0 5px 15px rgba(157, 141, 241, 0.2);
+        }
+
+        .btn-login {
+            border-radius: 20px;
+            background: white;
+            color: var(--accent-purple);
+            border: none;
+            padding: 14px;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+
+        .btn-login:hover {
+            background: var(--accent-purple);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(157, 141, 241, 0.3);
+        }
+
+        /* Alert styling */
+        .alert {
+            border-radius: 15px;
+            font-size: 0.85rem;
+            border: none;
+            background: rgba(255, 107, 107, 0.2);
+            color: #d63031;
+            backdrop-filter: blur(5px);
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .left-panel { display: none; }
+            .right-panel { width: 100%; padding: 40px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-wrapper">
+
+    <div class="left-panel">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" alt="AI Academic">
+        <h4 class="mt-4 fw-bold" style="color: #4a4a68;">Smart Insights</h4>
+        <p class="text-center small" style="color: #777;">Predicting your future success with Advanced Data Science.</p>
+    </div>
+
+    <div class="right-panel">
+
+        <div class="brand">AI-<span>{% if register_mode %}Register{% else %}Academic{% endif %}</span></div>
+        <p class="subtitle">{% if register_mode %}Create your student account.{% else %}Welcome back! Please login.{% endif %}</p>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-danger py-2">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{% if register_mode %}/register{% else %}/login{% endif %}">
+            <div class="mb-3">
+                <label class="form-label">Username / Email</label>
+                <input type="text" name="username" class="form-control" placeholder="hanisha_vit" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                {% if not register_mode %}
+                <div style="text-align: right; margin-top: 8px;">
+                    <a href="#" style="font-size: 13px; text-decoration: none; color: #777;">Forgot Password?</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-login w-100">
+                {% if register_mode %}Sign Up ✨{% else %}Log In ✨{% endif %}
+            </button>
+
+            <div class="text-center mt-4">
+                <p class="small" style="color: #888;">
+                    {% if register_mode %}
+                    Already have an account? <a href="/login" style="color: var(--accent-purple); font-weight: 600; text-decoration: none;">Login</a>
+                    {% else %}
+                    Don't have an account? <a href="/register" style="color: var(--accent-purple); font-weight: 600; text-decoration: none;">Sign Up</a>
+                    {% endif %}
+                </p>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

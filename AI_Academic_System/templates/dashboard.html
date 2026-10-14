@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.35);
+            --glass-border: rgba(255, 255, 255, 0.45);
+            --sidebar-width: 260px;
+            --accent-purple: #9d8df1;
+            --text-main: #5e5e8a;
+            --text-light: #8e8eaf;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            background-attachment: fixed;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .dashboard {
+            width: 95vw;
+            height: 90vh;
+            max-width: 1400px;
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 40px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            padding: 50px 25px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--glass-border);
+        }
+
+        .sidebar-brand {
+            font-weight: 700; font-size: 1.3rem; color: #4a4a68;
+            margin-bottom: 50px; text-align: center;
+        }
+
+        .nav-list { list-style: none; padding: 0; margin: 0; }
+        .nav-link {
+            display: flex; align-items: center; padding: 16px 20px;
+            border-radius: 20px; color: var(--text-light);
+            text-decoration: none; margin-bottom: 12px;
+            transition: all 0.3s ease; font-weight: 500;
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--accent-purple);
+        }
+
+        .nav-link:hover:not(.active) { background: rgba(255, 255, 255, 0.2); color: var(--text-main); }
+        .logout-container { margin-top: auto; }
+        .logout-link { color: #ff7675; font-weight: 600; }
+
+        .main-content { padding: 40px 4vw; overflow-y: auto; }
+
+        /* HEADER INTERACTION STYLES */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
+        .welcome-msg h2 { font-size: 1.8rem; margin: 0; color: #333; }
+
+        .header-interaction {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .status-chip {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 8px 18px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-purple);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        #dynamic-tip {
+            font-style: italic;
+            font-size: 0.85rem;
+            color: #7f7f9f;
+            margin-top: 5px;
+            transition: opacity 0.5s;
+        }
+
+        .avatar-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+
+        /* METRICS */
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 30px; }
+        .metric-card {
+            background: rgba(255, 255, 255, 0.45); border-radius: 25px;
+            padding: 25px; border: 1px solid var(--glass-border);
+            text-align: center; transition: transform 0.3s ease;
+        }
+        .metric-card:hover { transform: translateY(-8px); }
+        .metric-card h2 { margin: 15px 0; font-size: 1.8rem; color: var(--accent-purple); }
+
+        .btn {
+            background: #fff; color: var(--accent-purple); border: none;
+            padding: 14px 30px; border-radius: 18px; font-weight: 600;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px; transition: 0.3s;
+        }
+        .btn:hover { background: var(--accent-purple); color: white; }
+
+        .visuals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .chart-card {
+            background: #fff; border-radius: 25px; padding: 20px;
+            min-height: 220px; display: flex; flex-direction: column;
+        }
+        .canvas-container { flex: 1; position: relative; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="sidebar-brand">AI PREDICTION</div>
+        <ul class="nav-list">
+            <li><a href="{{ url_for('dashboard') }}" class="nav-link active">Dashboard</a></li>
+            <li><a href="{{ url_for('prediction_page') }}" class="nav-link">Prediction</a></li>
+            <li><a href="{{ url_for('learning_hub') }}" class="nav-link">Learning Hub</a></li>
+            <li><a href="{{ url_for('tech_news') }}" class="nav-link">Tech News</a></li>
+        </ul>
+        <div class="logout-container">
+            <a href="{{ url_for('logout') }}" class="nav-link logout-link">Logout</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="welcome-msg">
+                <h2>Hey 👋 ready to analyze?</h2>
+                <p id="dynamic-tip">Loading academic insight...</p>
+            </div>
+
+            <div class="header-interaction">
+                <div class="status-chip">
+                    <span>📍</span> VIT Campus
+                </div>
+                <div class="status-chip">
+                    <span>📅</span> Semester 2
+                </div>
+            </div>
+
+            <div class="avatar-group">
+                <div style="text-align: right;">
+                    <p style="margin:0; font-weight:600; font-size:0.9rem;">Hanisha M.</p>
+                    <p style="margin:0; font-size:0.75rem; color:#888;">M.Sc Data Science</p>
+                </div>
+                <div class="avatar">
+                    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profile">
+                </div>
+            </div>
+        </header>
+
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <h5>🔥 Burnout Level</h5>
+                <h2 style="color: #eb4d4b;">{{ burnout }}</h2>
+            </div>
+            <div class="metric-card">
+                <h5>🧠 Mental Health</h5>
+                <h2 style="color: #6ab04c;">{{ mental }}</h2>
+            </div>
+            <div class="metric-card">
+                <h5>⚡ Productivity</h5>
+                <h2 style="color: #3b82f6;">{{ productivity }}%</h2>
+            </div>
+        </section>
+
+        <a href="{{ url_for('prediction_page') }}" style="text-decoration: none;">
+            <button class="btn">✨ New Prediction</button>
+        </a>
+
+        <section class="visuals-grid">
+            <div class="chart-card">
+                <p>Status Comparison</p>
+                <div class="canvas-container"><canvas id="barChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <p>Distribution</p>
+                <div class="canvas-container"><canvas id="pieChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <p>Trend</p>
+                <div class="canvas-container"><canvas id="lineChart"></canvas></div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    const purple = '#9d8df1', blue = '#3b82f6', pink = '#fbc2eb';
+    Chart.defaults.maintainAspectRatio = false;
+
+    // Dynamic Motivation Logic
+    const tips = [
+        "Data says: 7+ hours of sleep boosts accuracy! 😴",
+        "Consistent attendance is your superpower. 📈",
+        "Take a 5-min break to reset your focus. 🧘",
+        "VITians: Let's turn data into insights! 🚀",
+        "Focus on productivity, not just study hours. ⚡"
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const tipElement = document.getElementById('dynamic-tip');
+        tipElement.innerText = tips[Math.floor(Math.random() * tips.length)];
+    });
+
+    // Charts
+    new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+            labels: ['W1', 'W2', 'W3', 'W4'],
+            datasets: [{ data: [65, 59, 80, 81], borderColor: purple, fill: true, tension: 0.4 }]
+        },
+        options: { plugins: { legend: { display: false } } }
+    });
+
+    new Chart(document.getElementById('pieChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Burnout', 'Mental', 'Prod'],
+            datasets: [{ data: [{{ burnout_value }}, {{ mental_value }}, {{ productivity }}], backgroundColor: [pink, purple, blue] }]
+        }
+    });
+
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: ['B', 'M', 'P'],
+            datasets: [{ data: [{{ burnout_value }}, {{ mental_value }}, {{ productivity }}], backgroundColor: [purple, pink, blue] }]
+        },
+        options: { plugins: { legend: { display: false } } }
+    });
+</script>
+
+</body>
+</html>

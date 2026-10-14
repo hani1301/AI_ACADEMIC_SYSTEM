@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Tech Briefs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --accent-purple: #9d8df1;
+            --text-main: #4a4a68;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            background-attachment: fixed;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;
+            margin: 0;
+        }
+
+        .hub-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            border-radius: 40px;
+            border: 1px solid var(--glass-border);
+            padding: 50px;
+            width: 95%;
+            max-width: 1300px;
+        }
+
+        .header-section { text-align: center; margin-bottom: 40px; }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid var(--glass-border);
+            padding: 10px 25px;
+            border-radius: 15px;
+            margin: 5px;
+            color: var(--text-main);
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        .filter-btn.active {
+            background: white;
+            color: var(--accent-purple);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .news-card {
+            background: rgba(255, 255, 255, 0.45);
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            padding: 25px;
+            display: flex;
+            gap: 20px;
+            transition: 0.3s;
+            height: 100%;
+        }
+
+        .icon-box {
+            width: 60px; height: 60px; min-width: 60px;
+            background: white; border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent-purple); font-size: 1.5rem;
+        }
+
+        .category-tag { font-size: 0.7rem; font-weight: 700; color: var(--accent-purple); text-transform: uppercase; }
+        .news-card h5 { font-weight: 700; font-size: 1.1rem; margin: 10px 0; color: #333; }
+        .news-card p { font-size: 0.85rem; color: #555; line-height: 1.5; }
+        .read-btn { color: var(--accent-purple); text-decoration: none; font-weight: 700; font-size: 0.85rem; }
+
+        @media (max-width: 992px) { .news-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .news-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="hub-container">
+    <div class="header-section">
+        <a href="{{ url_for('dashboard') }}" style="text-decoration: none; color: var(--text-main); font-weight: 600;">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+        <h1 class="fw-bold mt-3">Tech Briefs 🚀</h1>
+        <p>Real-time updates fetched dynamically</p>
+
+        <div class="mt-4">
+            <a href="{{ url_for('tech_news', category='technology') }}" class="filter-btn {% if current_category == 'technology' %}active{% endif %}">All</a>
+            <a href="{{ url_for('tech_news', category='artificial intelligence') }}" class="filter-btn {% if current_category == 'artificial intelligence' %}active{% endif %}">AI</a>
+            <a href="{{ url_for('tech_news', category='software development') }}" class="filter-btn {% if current_category == 'software development' %}active{% endif %}">Dev</a>
+            <a href="{{ url_for('tech_news', category='computer hardware') }}" class="filter-btn {% if current_category == 'computer hardware' %}active{% endif %}">Hardware</a>
+            <a href="{{ url_for('tech_news', category='future tech') }}" class="filter-btn {% if current_category == 'future tech' %}active{% endif %}">Media</a>
+        </div>
+    </div>
+
+    <div class="news-grid">
+        {% for article in articles %}
+        <div class="news-card">
+            <div class="icon-box">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="content">
+                <span class="category-tag">{{ article.source.name }} | {{ article.publishedAt[:10] }}</span>
+                <h5>{{ article.title[:70] }}...</h5>
+                <p>{{ article.description[:110] if article.description else "Click to read the full technical details of this update." }}...</p>
+                <a href="{{ article.url }}" target="_blank" class="read-btn">Read Full Article →</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>
